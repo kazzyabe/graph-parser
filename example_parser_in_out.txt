@@ -1,0 +1,21 @@
+Example input:
+
+# text = This is a test yall .
+1	This	_	_	_	_	_	_	_	_
+2	is	_	_	_	_	_	_	_	_	
+3	a	_	_	_	_	_	_	_	_	
+4	test	_	_	_	_	_	_	_	_	
+5-6	yall	_	_	_	_	_	
+5	y	_	_	_	_	_	_	_	_	
+6	all	_	_	_	_	_	_	_	_
+
+Example output:
+
+# text = This is a test yall .
+1	This	_	PRON	_	_	4	nsubj	_	_
+2	is	_	AUX	_	_	4	cop	_	_
+3	a	_	DET	_	_	4	det	_	_
+4	test	_	NOUN	_	_	0	root	_	_	
+5-6	yall	_	_	_	_	_	_	_	_	
+5	y	_	PRON	_	_	4	parataxis	_	_	
+6	all	_	ADJ	_	_	6	amod	_	_
