@@ -22,11 +22,11 @@ class PerceptronTagger(object):
 
 if __name__ == "__main__":
     
-    // opens sample file
+    # opens sample file
     with open('example_parser_in_out.txt') as data:
         file = data.readlines()
     
-    // prints each line of the sample file
+    # prints each line of the sample file
     for i in range(len(file)):
         print(file[i])
 
