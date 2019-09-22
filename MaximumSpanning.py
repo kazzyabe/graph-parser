@@ -1,5 +1,15 @@
+def detcycle(V,E):
+    """
+    Detect cycles
+
+    V: vertices[0...n]
+    E: adges (i,j,w) where i is the head, j is the dependent, w is the weight
+    """
+
 def maxspan(V,E):
     """
+    Find maximum spanning tree
+    
     V: vertices[0...n]
     E: adges (i,j,w) where i is the head, j is the dependent, w is the weight
     """
