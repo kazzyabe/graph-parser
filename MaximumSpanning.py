@@ -1,4 +1,14 @@
 def cyclehelp(a, visited, adjacent):
+    """
+    detcycle helper
+    recursive function which keeps looking for cycles
+    a: current vertex
+    visited: a list of already visited vertecies
+    adjacent: a dictionary for adjacency
+
+    return cycles if found
+    otherwise return False
+    """
     # print(a,visited,adjacent)
     if a in visited:
         # print("CYCLE: ", visited)
@@ -22,6 +32,9 @@ def detcycle(V,E):
 
     V: vertices[0...n]
     E: adges (i,j,w) where i is the head, j is the dependent, w is the weight
+
+    return True, cycles if any cycles is found
+    otherwise, return False
     """
     # creating adjacent list
     adjacent = {}
