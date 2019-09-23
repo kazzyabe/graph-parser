@@ -1,3 +1,21 @@
+def cyclehelp(a, visited, adjacent):
+    # print(a,visited,adjacent)
+    if a in visited:
+        # print("CYCLE: ", visited)
+        visited += [a]
+        return visited
+    elif adjacent[a] == []:
+        # print("NO ADJACENT")
+        return False
+    else:
+        visited += [a]
+        res = []
+        for n in adjacent[a]:
+            tmp = cyclehelp(n, visited, adjacent)
+            if tmp:
+                res += [tmp]
+        return res
+
 def detcycle(V,E):
     """
     Detect cycles
@@ -5,11 +23,31 @@ def detcycle(V,E):
     V: vertices[0...n]
     E: adges (i,j,w) where i is the head, j is the dependent, w is the weight
     """
+    # creating adjacent list
+    adjacent = {}
+    for v in V[1:]:
+        adjacent[v] = []
+
+    for e in E:
+        adjacent[e[0]] += [e[1]]
+    # print(adjacent)
+
+    # Cycle detection by DFS
+    res = []
+    for v in V[1:]:
+        for a in adjacent[v]:
+            tmp = cyclehelp(a,[v], adjacent)
+            if tmp:
+                res += tmp
+    if res:
+        return True, res
+    else:
+        return False, []
 
 def maxspan(V,E):
     """
     Find maximum spanning tree
-    
+
     V: vertices[0...n]
     E: adges (i,j,w) where i is the head, j is the dependent, w is the weight
     """
@@ -24,10 +62,12 @@ def maxspan(V,E):
                     highest = e[2]
                     tmp = e
         M += [tmp]
-    
-    # if M has no cycle, it's the max spanning tree so return M
-    #....
-    #else cycle
+
+    c, cycles = detcycle(V, M)
+    # if there are cycles
+    if c:
+        # continue
+        print(c,cycles)
     return M
 
 if __name__ == "__main__":
