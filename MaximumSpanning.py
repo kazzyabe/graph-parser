@@ -130,13 +130,19 @@ def contraction(V,E,C):
                     if maxW < w[(c,v)]:
                         maxW = w[(c,v)]
                 E += [["c",v, maxW]]
-            elif c in adjacent[v]:
+                break
+    
+    for v in V:
+        for c in C:
+            if c in adjacent[v]:
                 maxW = 0
                 for c2 in C:
                     tmp = w[v,c2] - w[predecessor(c2, C, E),c2] + sumWeight(C,E)
                     if maxW < tmp:
                         maxW = tmp
                 E += [[v,"c",maxW]]
+                break
+
     V += ["c"]
     return V,E
                 
