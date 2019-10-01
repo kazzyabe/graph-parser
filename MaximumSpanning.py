@@ -130,7 +130,6 @@ def contraction(V,E,C):
                     if maxW < w[(c,v)]:
                         maxW = w[(c,v)]
                 E += [["c",v, maxW]]
-                break
     
     for v in V:
         for c in C:
@@ -141,8 +140,7 @@ def contraction(V,E,C):
                     if maxW < tmp:
                         maxW = tmp
                 E += [[v,"c",maxW]]
-                break
-
+                
     V += ["c"]
     return V,E
                 
@@ -160,7 +158,7 @@ def maxspan(V,E):
         tmp = []
         highest = 0
         for e in E:
-            if v == e[1]:
+            if v == e[1] and e[0] in V:
                 if highest < e[2]:
                     highest = e[2]
                     tmp = e
@@ -170,9 +168,17 @@ def maxspan(V,E):
     # if there are cycles
     if c:
         # continue
+        print("Cycles:")
         print(cycles)
         newV, newE = contraction(V,E,cycles[0])
+        print("Adjacency after contraction")
         print(adjacentT(newV,newE))
+        print("newV:",newV)
+        print("newE", newE)
+
+        print("Next maxspan call -----------------------")
+        print(maxspan(newV, newE))
+
     return M
 
 if __name__ == "__main__":
