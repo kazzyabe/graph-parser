@@ -116,33 +116,53 @@ def contraction(V,E,C):
         where a(y) is the predecessor of y in C
         W(C) is sum of all weights in C
     """
+    ep = {}
+
+    newNode = ["c","b", "a", "d", "e", "f"]
+    for n in newNode:
+        if not n in V:
+            new_v = n
+            break
+    # print("newV = ",newV)
     adjacent = adjacentT(V,E)
     # print(adjacent)
     w = weight(E)
     for c in C:
         V.remove(c)
     
+    print("(c,v)")
     for v in V:
         for c in C:
             if v in adjacent[c]:
+                print(c,v)
                 maxW = 0
+                ep_tmp = None
                 for c2 in C:
-                    if maxW < w[(c,v)]:
-                        maxW = w[(c,v)]
-                E += [["c",v, maxW]]
+                    if maxW < w[(c2,v)]:
+                        maxW = w[(c2,v)]
+                        ep_tmp = c2
+                E += [[new_v,v, maxW]]
+                ep[(new_v,v)] = ep_tmp
+                break
     
+    print("(v,c)")
     for v in V:
         for c in C:
             if c in adjacent[v]:
+                print(v,c)
                 maxW = 0
+                ep_tmp = None
                 for c2 in C:
                     tmp = w[v,c2] - w[predecessor(c2, C, E),c2] + sumWeight(C,E)
                     if maxW < tmp:
                         maxW = tmp
-                E += [[v,"c",maxW]]
+                        ep_tmp = c2
+                E += [[v,new_v,maxW]]
+                ep[(v,new_v)] = ep_tmp
+                break
                 
-    V += ["c"]
-    return V,E
+    V += [new_v]
+    return V,E, new_v,ep
                 
 
 def maxspan(V,E):
@@ -170,14 +190,16 @@ def maxspan(V,E):
         # continue
         print("Cycles:")
         print(cycles)
-        newV, newE = contraction(V,E,cycles[0])
+        newV, newE, new_v, ep = contraction(V,E,cycles[0])
         print("Adjacency after contraction")
         print(adjacentT(newV,newE))
-        print("newV:",newV)
-        print("newE", newE)
+        # print("newV: ",newV)
+        # print("newE: ", newE)
+        # print("ep: ", ep)
 
         print("Next maxspan call -----------------------")
-        print(maxspan(newV, newE))
+        M = maxspan(newV, newE)
+        print(M)
 
     return M
 
