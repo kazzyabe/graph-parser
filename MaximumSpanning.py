@@ -201,6 +201,13 @@ def maxspan(V,E):
         M = maxspan(newV, newE)
         print(M)
 
+        # adding j,v where j = ep[c,v]
+        for i in M:
+            if i[0] == new_v:
+                M += [[ep[i[0], i[1]],i[1], None]]
+            elif i[1] == new_v:
+                M += [[i[0],ep[i[0], i[1]], None]]
+
     return M
 
 if __name__ == "__main__":
