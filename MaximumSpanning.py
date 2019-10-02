@@ -199,14 +199,34 @@ def maxspan(V,E):
 
         print("Next maxspan call -----------------------")
         M = maxspan(newV, newE)
-        print(M)
+        # print(M)
 
         # adding j,v where j = ep[c,v]
+        keepE = []
         for i in M:
             if i[0] == new_v:
                 M += [[ep[i[0], i[1]],i[1], None]]
             elif i[1] == new_v:
                 M += [[i[0],ep[i[0], i[1]], None]]
+                keepE += [ep[i[0], i[1]]]
+        
+        # adding edges for the cycle,
+        i = 0
+        while i < len(cycles[0]):
+            if i == len(cycles[0]) - 1:
+                head = cycles[0][i]
+                dep = cycles[0][0]
+                if not dep in keepE:
+                    M += [[head,dep,None]]
+            i += 1
+        
+        # removing edges with contracted nodes
+        M_tmp = []
+        for e in M:
+            if not new_v in e:
+                M_tmp += [e]
+
+        M = M_tmp
 
     return M
 
