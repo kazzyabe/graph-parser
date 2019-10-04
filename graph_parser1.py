@@ -1,5 +1,13 @@
 class graph_based_parser:
     def load_data(self, f):
+        '''
+        load a training data(UD)
+
+        return V,E 
+        where 
+        V = verticies for each training data eg. V[0] = verticies for the first sentence
+        E = edges for each training data eg. E[0] = edges for the first sentence
+        '''
         f = open(f, "r")
         # Gold standard graphs in training eg V[0], E[0] = first graph
         V = []
