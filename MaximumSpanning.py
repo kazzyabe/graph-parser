@@ -75,17 +75,6 @@ def detcycle(V,E):
     return True, cycles if any cycles is found
     otherwise, return False
     """
-    # creating adjacent list
-    # adjacent = {}
-    # for v in V[1:]:
-    #     adjacent[v] = []
-
-    # for e in E:
-    #     print(e)
-    #     adjacent[e[0]] += [e[1]]
-    # print(adjacent)
-    # print("function: ")
-    # print(adjacent(V,E))
     adjacent = adjacentT(V,E)
 
     # Cycle detection by DFS
