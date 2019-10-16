@@ -172,12 +172,14 @@ def maxspan(V,E):
                     highest = e[2]
                     tmp = e
         M += [tmp]
-
+    
+    print("Current M ===========")
+    print(M)
     c, cycles = detcycle(V, M)
     # if there are cycles
     if c:
         # continue
-        print("Cycles:")
+        print("Cycles ==================")
         print(cycles)
         newV, newE, new_v, ep = contraction(V,E,cycles[0])
         print("Adjacency after contraction")
