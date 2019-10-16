@@ -94,12 +94,24 @@ class PerceptronWeighter():
             for sentence in sentences:
                 # print(c, n, '|||', sentence);
                 print(n, end='', file=sys.stderr)
+                print("sentence =============")
+                print(sentence)
                 prev, prev2 = self.START
                 context = self.START + [self._normalise(w[1]) for w in sentence] + self.END
                 tags = [w[3] for w in sentence]
                 for i, token in enumerate(sentence):
+                    print("token ==========")
+                    print(token)
                     word = token[1]
-                    feats = self._get_features(i, word, context, prev, prev2)
+                    dependentPOS = token[3]
+                    head = int(token[6])
+                    print("head ============")
+                    print(head)
+                    print(sentence[head-1])
+                    headPOS = sentence[head-1][3]
+                    headW = sentence[head-1][1]
+
+                    feats = self._get_features(i, word, context, prev, prev2, headPOS, headW, dependentPOS)
                     print("feats ===========")
                     print(feats)
                     guess = self.model.predict(feats)
@@ -155,11 +167,15 @@ class PerceptronWeighter():
         else:
             return word.lower()
 
-    def _get_features(self, i, word, context, prev, prev2):
+    def _get_features(self, i, word, context, prev, prev2, headPOS, headW, dependentPOS):
         '''Map tokens into a feature representation, implemented as a
         {hashable: float} dict. If the features change, a new model must be
         trained.
         '''
+        print("Context ===============")
+        print(context)
+        print("Word =================")
+        print(word)
         def add(name, *args):
             features[' '.join((name,) + tuple(args))] += 1
 
@@ -180,6 +196,10 @@ class PerceptronWeighter():
         add('i+1 word', context[i+1])
         add('i+1 suffix', context[i+1][-3:])
         add('i+2 word', context[i+2])
+        ##########  features for edge weighting
+        add('head POS', headPOS)
+        add("head word", headW)
+        add('dependent POS', dependentPOS)
         #print(word, '|||', features)
         return features
 
