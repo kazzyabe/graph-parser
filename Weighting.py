@@ -94,39 +94,56 @@ class PerceptronWeighter():
             for sentence in sentences:
                 # print(c, n, '|||', sentence);
                 print(n, end='', file=sys.stderr)
-                print("sentence =============")
-                print(sentence)
+                # print("sentence =============")
+                # print(sentence)
                 prev, prev2 = self.START
                 context = self.START + [self._normalise(w[1]) for w in sentence] + self.END
                 tags = [w[3] for w in sentence]
                 for i, token in enumerate(sentence):
-                    print("token ==========")
-                    print(token)
+                    # print("token ==========")
+                    # print(token)
+                    # check if empty
+                    check = [1,3,6]
+                    flag = False
+                    for i in check:
+                        if token[i] == "_":
+                            flag = True
+                    if flag:
+                        prev2 = prev
+                        dependentPOS = token[3]
+                        prev = dependentPOS
+                        c += guess == tags[i]
+                        n += 1
+                        continue
+
                     word = token[1]
                     dependentPOS = token[3]
+                    print(token)
                     head = int(token[6])
-                    print("head ============")
-                    print(head)
-                    print(sentence[head-1])
+                    # print("head ============")
+                    # print(head)
+                    # print(sentence[head-1])
                     headPOS = sentence[head-1][3]
                     headW = sentence[head-1][1]
 
                     feats = self._get_features(i, word, context, prev, prev2, headPOS, headW, dependentPOS)
-                    print("feats ===========")
-                    print(feats)
+                    # print("feats ===========")
+                    # print(feats)
                     guess = self.model.predict(feats)
-                    print("guess ===========")
-                    print(guess)
+                    # print("guess ===========")
+                    # print(guess)
                     # Need to modify update function
-                    # self.model.update(tags[i], guess, feats)
+                    self.model.update(feats)
+                    # print("\nweights ============")
+                    # print(self.model.weights)
 
                     prev2 = prev
-                    prev = guess
+                    prev = dependentPOS
                     c += guess == tags[i]
                     n += 1
-                    break
-                break
             break
+        print("\nweights ============")
+        print(self.model.weights)
         #         print('\r', end='', file=sys.stderr)
         #     random.shuffle(sentences)
         #     print()
@@ -177,6 +194,7 @@ class PerceptronWeighter():
         print("Word =================")
         print(word)
         def add(name, *args):
+            print((name,) + tuple(args))
             features[' '.join((name,) + tuple(args))] += 1
 
         i += len(self.START)
@@ -188,6 +206,10 @@ class PerceptronWeighter():
         add('i-1 tag', prev)
         add('i-2 tag', prev2)
         add('i tag+i-2 tag', prev, prev2)
+        print("i =======")
+        print(i)
+        print("context ==========")
+        print(context)
         add('i word', context[i])
         add('i-1 tag+i word', prev, context[i])
         add('i-1 word', context[i-1])

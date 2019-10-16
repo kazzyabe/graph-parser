@@ -35,14 +35,13 @@ class AveragedPerceptron(object):
         for feat, value in features.items():
             if feat not in self.weights or value == 0:
                 continue
-            weights = self.weights[feat]
-            for label, weight in weights.items():
-                score += value * weight
+            weight = self.weights[feat]
+            score += value * weight
         # Do a secondary alphabetic sort, for stability
         # return max(self.classes, key=lambda label: (scores[label], label))
         return score
 
-    def update(self, truth, guess, features):
+    def update(self, features):
         '''Update the feature weights.'''
         def upd_feat(f, w, v):
             param = (f)
@@ -57,8 +56,8 @@ class AveragedPerceptron(object):
 
         self.i += 1
         for f in features:
-            weights = self.weights.setdefault(f, 0.0)
-            upd_feat(f, weights.get(f, 0.0), 1.0)
+            weight = self.weights.setdefault(f, 0.0)
+            upd_feat(f, weight, 1.0)
 
         # if truth == guess:
         #     return None
