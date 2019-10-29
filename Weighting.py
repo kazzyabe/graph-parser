@@ -8,6 +8,7 @@ import pickle
 
 from PerceptronW import AveragedPerceptron
 from copy import copy
+from MaximumSpanning import maxspan
 
 class PerceptronWeighter():
     '''Greedy Averaged Perceptron weighter, inspired by Matthew Honnibal.
@@ -203,6 +204,9 @@ class PerceptronWeighter():
                 print(V)
                 print("E ======================")
                 print(E)
+                print("==============================================================")
+                print("Maxspan")
+                print(maxspan(V,E))
 
 
 

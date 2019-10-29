@@ -165,9 +165,12 @@ def maxspan(V,E):
     M = []
     for v in V[1:]:
         tmp = []
-        highest = 0
+        highest = None
         for e in E:
             if v == e[1] and e[0] in V:
+                if highest == None:
+                    highest = e[2]
+                    tmp = e
                 if highest < e[2]:
                     highest = e[2]
                     tmp = e
