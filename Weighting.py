@@ -7,6 +7,7 @@ from collections import defaultdict
 import pickle
 
 from PerceptronW import AveragedPerceptron
+from copy import copy
 
 class PerceptronWeighter():
     '''Greedy Averaged Perceptron weighter, inspired by Matthew Honnibal.
@@ -94,56 +95,155 @@ class PerceptronWeighter():
             for sentence in sentences:
                 # print(c, n, '|||', sentence);
                 print(n, end='', file=sys.stderr)
-                # print("sentence =============")
-                # print(sentence)
-                prev, prev2 = self.START
-                context = self.START + [self._normalise(w[1]) for w in sentence] + self.END
-                tags = [w[3] for w in sentence]
-                for i, token in enumerate(sentence):
-                    # print("token ==========")
-                    # print(token)
-                    # check if empty
-                    check = [1,3,6]
-                    flag = False
-                    for i in check:
-                        if token[i] == "_":
-                            flag = True
-                    if flag:
-                        prev2 = prev
-                        dependentPOS = token[3]
-                        prev = dependentPOS
-                        c += guess == tags[i]
-                        n += 1
+                print("sentence =============")
+                print(sentence)
+                # prev, prev2 = self.START
+                # context = self.START + [self._normalise(w[1]) for w in sentence] + self.END
+
+                ###### Gold tree #######
+                G_V = [0]
+                G_E = []
+                trimed_sentence = []
+                for token in sentence:
+                    if "." in token[0]:
                         continue
-
-                    word = token[1]
-                    dependentPOS = token[3]
-                    print(token)
+                    trimed_sentence.append(token)
+                    dependent = int(token[0])
+                    # print(dependent)
                     head = int(token[6])
-                    # print("head ============")
-                    # print(head)
-                    # print(sentence[head-1])
-                    headPOS = sentence[head-1][3]
-                    headW = sentence[head-1][1]
 
-                    feats = self._get_features(i, word, context, prev, prev2, headPOS, headW, dependentPOS)
-                    # print("feats ===========")
-                    # print(feats)
-                    guess = self.model.predict(feats)
-                    # print("guess ===========")
-                    # print(guess)
-                    # Need to modify update function
-                    self.model.update(feats)
-                    # print("\nweights ============")
-                    # print(self.model.weights)
+                    # headPOS = sentence[head-1][3]
+                    # headW = sentence[head-1][1]
 
-                    prev2 = prev
-                    prev = dependentPOS
-                    c += guess == tags[i]
-                    n += 1
+                    # feats = self._get_features(dependent - 1, depWord, context, prev, prev2, headPOS, headW, depPOS)
+                    # guess = self.model.predict(feats)
+
+                    G_V.append(dependent)
+                    e_tmp =[head, dependent, None]
+                    G_E.append(e_tmp)
+
+                    # prev2 = prev
+                    # prev = depPOS
+                
+                ###### Guessing weights ##############
+                V = copy(G_V)
+                E = []
+                # context = self.START + [self._normalise(w[1]) for w in trimed_sentence] + self.END
+                for i in range(0, len(V)):
+                    for j in range(i + 1, len(V)):
+                        print((i,j))
+                        dep = j
+                        head = i
+                        token = trimed_sentence[j-1]
+                        depWord = token[1]
+                        depPOS = token[3]
+                        # head info
+                        if i == 0:
+                            headWord = "ROOT"
+                            headPOS = "ROOT"
+                        else:
+                            h_token = trimed_sentence[i-1]
+                            headWord = h_token[1]
+                            headPOS = h_token[3]
+
+                        # prev retrieval
+                        if j == 1:
+                            prev = "ROOT"
+                            prev2 = "START"
+                        elif j == 2:
+                            prev = trimed_sentence[j-2][3]
+                            prev2 = "ROOT"
+                        else:
+                            prev = trimed_sentence[j-2][3]
+                            prev2 = trimed_sentence[j-3][3]
+
+                        # get features
+                        feats = self._get_features(depWord, prev, prev2, headPOS, headWord, depPOS)
+                        # print(feats)
+                        guess = self.model.predict(feats)
+
+                        e_tmp =[head, dep, guess]
+                        E.append(e_tmp)
+                    if i >= 2:
+                        for j in range(1,i):
+                            dep = j
+                            head = i
+                            token = trimed_sentence[j-1]
+                            depWord = token[1]
+                            depPOS = token[3]
+
+                            # head info
+                            h_token = trimed_sentence[i-1]
+                            headWord = h_token[1]
+                            headPOS = h_token[3]
+
+                            # prev retrieval
+                            if j == 1:
+                                prev = "ROOT"
+                                prev2 = "START"
+                            elif j == 2:
+                                prev = trimed_sentence[j-2][3]
+                                prev2 = "ROOT"
+                            else:
+                                prev = trimed_sentence[j-2][3]
+                                prev2 = trimed_sentence[j-3][3]
+
+                            # get features
+                            feats = self._get_features(depWord, prev, prev2, headPOS, headWord, depPOS)
+                            # print(feats)
+                            guess = self.model.predict(feats)
+
+                            e_tmp =[head, dep, guess]
+                            E.append(e_tmp)
+                print("Gold V =================")
+                print(G_V)
+                print("Gold E =================")
+                print(G_E)
+                print("V ======================")
+                print(V)
+                print("E ======================")
+                print(E)
+
+
+
+                # prev, prev2 = self.START
+                # context = self.START + [self._normalise(w[1]) for w in sentence] + self.END
+                # tags = [w[3] for w in sentence]
+                # for i, token in enumerate(sentence):
+                #     print("token ==========")
+                #     print(token)
+                #     if "." in token[0]:
+                #         continue
+
+                #     word = token[1]
+                #     dependentPOS = token[3]
+                #     print(token)
+                #     head = int(token[6])
+                #     # print("head ============")
+                #     # print(head)
+                #     # print(sentence[head-1])
+                #     headPOS = sentence[head-1][3]
+                #     headW = sentence[head-1][1]
+
+                #     feats = self._get_features(i, word, context, prev, prev2, headPOS, headW, dependentPOS)
+                #     # print("feats ===========")
+                #     # print(feats)
+                #     guess = self.model.predict(feats)
+                #     # print("guess ===========")
+                #     # print(guess)
+                #     # Need to modify update function
+                #     self.model.update(feats)
+                #     # print("\nweights ============")
+                #     # print(self.model.weights)
+
+                #     prev2 = prev
+                #     prev = dependentPOS
+                #     c += guess == tags[i]
+                #     n += 1
+                break
             break
-        print("\nweights ============")
-        print(self.model.weights)
+        # print("\nweights ============")
+        # print(self.model.weights)
         #         print('\r', end='', file=sys.stderr)
         #     random.shuffle(sentences)
         #     print()
@@ -183,45 +283,47 @@ class PerceptronWeighter():
             return '!DIGITS'
         else:
             return word.lower()
-
-    def _get_features(self, i, word, context, prev, prev2, headPOS, headW, dependentPOS):
+    
+    # def _get_features(self, i, word, context, prev, prev2, headPOS, headW, dependentPOS):
+    def _get_features(self, depWord, prev, prev2, headPOS, headWord, depPOS):
         '''Map tokens into a feature representation, implemented as a
         {hashable: float} dict. If the features change, a new model must be
         trained.
         '''
-        print("Context ===============")
-        print(context)
+        # print("Context ===============")
+        # print(context)
         print("Word =================")
-        print(word)
+        print(depWord)
         def add(name, *args):
             print((name,) + tuple(args))
             features[' '.join((name,) + tuple(args))] += 1
 
-        i += len(self.START)
+        # i += len(self.START)
         features = defaultdict(int)
         # It's useful to have a constant feature, which acts sort of like a prior
         add('bias')
-        add('i suffix', word[-3:])
-        add('i pref1', word[0])
+        add('i suffix', depWord[-3:])
+        add('i pref1', depWord[0])
         add('i-1 tag', prev)
         add('i-2 tag', prev2)
         add('i tag+i-2 tag', prev, prev2)
-        print("i =======")
-        print(i)
-        print("context ==========")
-        print(context)
-        add('i word', context[i])
-        add('i-1 tag+i word', prev, context[i])
-        add('i-1 word', context[i-1])
-        add('i-1 suffix', context[i-1][-3:])
-        add('i-2 word', context[i-2])
-        add('i+1 word', context[i+1])
-        add('i+1 suffix', context[i+1][-3:])
-        add('i+2 word', context[i+2])
+        # print("i =======")
+        # print(i)
+        # print("context ==========")
+        # print(context)
+        # add('i word', context[i])
+        # add('i-1 tag+i word', prev, context[i])
+        # add('i-1 word', context[i-1])
+        # add('i-1 suffix', context[i-1][-3:])
+        # add('i-2 word', context[i-2])
+        # add('i+1 word', context[i+1])
+        # add('i+1 suffix', context[i+1][-3:])
+        # add('i+2 word', context[i+2])
         ##########  features for edge weighting
         add('head POS', headPOS)
-        add("head word", headW)
-        add('dependent POS', dependentPOS)
+        add("head word", headWord)
+        add('dependent POS', depPOS)
+        add('dependent word', depWord)
         #print(word, '|||', features)
         return features
 
@@ -273,8 +375,9 @@ def trainer(corpus_file, model_file):
                 continue
             sentence.append(tuple(token.strip().split('\t')))
         sentences.append(sentence)
-
-    t.train(sentences, save_loc=model_file, nr_iter=5)
+    
+    # print(sentences[0])
+    t.train(sentences, save_loc=model_file, nr_iter=1)
 
 if len(sys.argv) == 3 and sys.argv[1] == '-t':
     trainer(sys.stdin, sys.argv[2])    
