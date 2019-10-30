@@ -1,6 +1,7 @@
 import sys
 
 sys.path.insert(0, "conllu-perceptron-tagger")
+sys.stderr = open("debugg.log", "w")
 
 import random
 from collections import defaultdict
@@ -96,8 +97,8 @@ class PerceptronWeighter():
             for sentence in sentences:
                 # print(c, n, '|||', sentence);
                 print(n, end='', file=sys.stderr)
-                print("sentence =============")
-                print(sentence)
+                print("sentence =============", file=sys.stderr)
+                print(sentence, file=sys.stderr)
                 # prev, prev2 = self.START
                 # context = self.START + [self._normalise(w[1]) for w in sentence] + self.END
 
@@ -133,7 +134,7 @@ class PerceptronWeighter():
                 # context = self.START + [self._normalise(w[1]) for w in trimed_sentence] + self.END
                 for i in range(0, len(V)):
                     for j in range(i + 1, len(V)):
-                        print((i,j))
+                        print((i,j), file=sys.stderr)
                         dep = j
                         head = i
                         token = trimed_sentence[j-1]
@@ -199,20 +200,20 @@ class PerceptronWeighter():
                             e_tmp =[head, dep, guess]
                             E.append(e_tmp)
                             F[(head,dep)] = feats
-                print("Gold V =================")
-                print(G_V)
-                print("Gold E =================")
-                print(G_E)
-                print("V ======================")
-                print(V)
-                print("E ======================")
-                print(E)
-                print("F =====================")
-                print(F)
-                print("==============================================================")
-                print("Maxspan")
+                print("Gold V =================", file=sys.stderr)
+                print(G_V, file=sys.stderr)
+                print("Gold E =================", file=sys.stderr)
+                print(G_E, file=sys.stderr)
+                print("V ======================", file=sys.stderr)
+                print(V, file=sys.stderr)
+                print("E ======================", file=sys.stderr)
+                print(E, file=sys.stderr)
+                print("F =====================", file=sys.stderr)
+                print(F, file=sys.stderr)
+                print("==============================================================", file=sys.stderr)
+                print("Maxspan", file=sys.stderr)
                 M = maxspan(V,E)
-                print(M)
+                print(M, file=sys.stderr)
                 for m in M:
                     if m in G_E:
                         self.model.update(F[m], 1.0)
@@ -259,8 +260,8 @@ class PerceptronWeighter():
                 #     n += 1
                 # break
             break
-        print("\nweights ============")
-        print(self.model.weights)
+        print("\nweights ============", file=sys.stderr)
+        print(self.model.weights, file=sys.stderr)
         #         print('\r', end='', file=sys.stderr)
         #     random.shuffle(sentences)
         #     print()

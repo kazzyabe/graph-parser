@@ -1,3 +1,6 @@
+import sys
+# sys.stderr = open("maxspan.log", "w")
+
 def adjacentT(V, E):
     adjacent = {}
     for v in V:
@@ -119,11 +122,11 @@ def contraction(V,E,C):
     for c in C:
         V.remove(c)
     
-    print("(c,v)")
+    print("(c,v)", file=sys.stderr)
     for v in V:
         for c in C:
             if v in adjacent[c]:
-                print(c,v)
+                print(c,v, file=sys.stderr)
                 maxW = 0
                 ep_tmp = None
                 for c2 in C:
@@ -134,11 +137,11 @@ def contraction(V,E,C):
                 ep[(new_v,v)] = ep_tmp
                 break
     
-    print("(v,c)")
+    print("(v,c)", file=sys.stderr)
     for v in V:
         for c in C:
             if c in adjacent[v]:
-                print(v,c)
+                print(v,c, file=sys.stderr)
                 maxW = 0
                 ep_tmp = None
                 for c2 in C:
@@ -176,22 +179,22 @@ def maxspan(V,E):
                     tmp = e
         M += [tmp]
     
-    print("Current M ===========")
-    print(M)
+    print("Current M ===========", file=sys.stderr)
+    print(M, file=sys.stderr)
     c, cycles = detcycle(V, M)
     # if there are cycles
     if c:
         # continue
-        print("Cycles ==================")
-        print(cycles)
+        print("Cycles ==================", file=sys.stderr)
+        print(cycles, file=sys.stderr)
         newV, newE, new_v, ep = contraction(V,E,cycles[0])
-        print("Adjacency after contraction")
-        print(adjacentT(newV,newE))
+        print("Adjacency after contraction", file=sys.stderr)
+        print(adjacentT(newV,newE), file=sys.stderr)
         # print("newV: ",newV)
         # print("newE: ", newE)
         # print("ep: ", ep)
 
-        print("Next maxspan call -----------------------")
+        print("Next maxspan call -----------------------", file=sys.stderr)
         M = maxspan(newV, newE)
         # print(M)
 
