@@ -222,7 +222,11 @@ def maxspan(V,E):
 
         M = M_tmp
 
-    return M
+    # removing weights
+    noWM = []
+    for m in M:
+        noWM.append((m[0],m[1]))
+    return noWM
 
 if __name__ == "__main__":
     V = [0,1,2,3]

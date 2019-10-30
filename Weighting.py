@@ -120,7 +120,7 @@ class PerceptronWeighter():
                     # guess = self.model.predict(feats)
 
                     G_V.append(dependent)
-                    e_tmp =[head, dependent, None]
+                    e_tmp =(head, dependent)
                     G_E.append(e_tmp)
 
                     # prev2 = prev
@@ -129,6 +129,7 @@ class PerceptronWeighter():
                 ###### Guessing weights ##############
                 V = copy(G_V)
                 E = []
+                F = {}
                 # context = self.START + [self._normalise(w[1]) for w in trimed_sentence] + self.END
                 for i in range(0, len(V)):
                     for j in range(i + 1, len(V)):
@@ -165,6 +166,7 @@ class PerceptronWeighter():
 
                         e_tmp =[head, dep, guess]
                         E.append(e_tmp)
+                        F[(head,dep)] = feats
                     if i >= 2:
                         for j in range(1,i):
                             dep = j
@@ -196,6 +198,7 @@ class PerceptronWeighter():
 
                             e_tmp =[head, dep, guess]
                             E.append(e_tmp)
+                            F[(head,dep)] = feats
                 print("Gold V =================")
                 print(G_V)
                 print("Gold E =================")
@@ -204,9 +207,19 @@ class PerceptronWeighter():
                 print(V)
                 print("E ======================")
                 print(E)
+                print("F =====================")
+                print(F)
                 print("==============================================================")
                 print("Maxspan")
-                print(maxspan(V,E))
+                M = maxspan(V,E)
+                print(M)
+                for m in M:
+                    if m in G_E:
+                        self.model.update(F[m], 1.0)
+                        c += 1
+                    else:
+                        self.model.update(F[m], -1.0)
+                    n += 1
 
 
 
@@ -246,8 +259,8 @@ class PerceptronWeighter():
                 #     n += 1
                 break
             break
-        # print("\nweights ============")
-        # print(self.model.weights)
+        print("\nweights ============")
+        print(self.model.weights)
         #         print('\r', end='', file=sys.stderr)
         #     random.shuffle(sentences)
         #     print()

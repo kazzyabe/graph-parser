@@ -41,7 +41,7 @@ class AveragedPerceptron(object):
         # return max(self.classes, key=lambda label: (scores[label], label))
         return score
 
-    def update(self, features):
+    def update(self, features, val):
         '''Update the feature weights.'''
         def upd_feat(f, w, v):
             param = (f)
@@ -57,7 +57,7 @@ class AveragedPerceptron(object):
         self.i += 1
         for f in features:
             weight = self.weights.setdefault(f, 0.0)
-            upd_feat(f, weight, 1.0)
+            upd_feat(f, weight, val)
 
         # if truth == guess:
         #     return None
