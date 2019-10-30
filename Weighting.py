@@ -257,7 +257,7 @@ class PerceptronWeighter():
                 #     prev = dependentPOS
                 #     c += guess == tags[i]
                 #     n += 1
-                break
+                # break
             break
         print("\nweights ============")
         print(self.model.weights)
