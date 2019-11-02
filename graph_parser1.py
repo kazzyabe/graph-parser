@@ -1,4 +1,14 @@
+from Weighting import PerceptronWeighter
+
 class graph_based_parser:
+    def __init__(self, m="model", load=True):
+        # POS
+        
+        # weighter
+        if load:
+            self.weighter = PerceptronWeighter(m,load)
+        else:
+            self.weighter = PerceptronWeighter(m, load)
     def load_data(self, f):
         '''
         load a training data(UD)

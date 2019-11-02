@@ -11,6 +11,9 @@ from PerceptronW import AveragedPerceptron
 from copy import copy
 from MaximumSpanning import maxspan
 
+def _pc(n, d):
+	return (float(n) / d) * 100
+
 class PerceptronWeighter():
     '''Greedy Averaged Perceptron weighter, inspired by Matthew Honnibal.
 
@@ -79,6 +82,11 @@ class PerceptronWeighter():
             line = corpus.readline()
 
         return 
+
+    def predict(self,sentence):
+        '''
+        predict weights for a graph
+        '''
 
     def train(self, sentences, save_loc=None, nr_iter=5):
         '''Train a model from sentences, and save it at ``save_loc``. ``nr_iter``
@@ -200,20 +208,20 @@ class PerceptronWeighter():
                             e_tmp =[head, dep, guess]
                             E.append(e_tmp)
                             F[(head,dep)] = feats
-                print("Gold V =================", file=sys.stderr)
-                print(G_V, file=sys.stderr)
-                print("Gold E =================", file=sys.stderr)
-                print(G_E, file=sys.stderr)
-                print("V ======================", file=sys.stderr)
-                print(V, file=sys.stderr)
-                print("E ======================", file=sys.stderr)
-                print(E, file=sys.stderr)
-                print("F =====================", file=sys.stderr)
-                print(F, file=sys.stderr)
-                print("==============================================================", file=sys.stderr)
-                print("Maxspan", file=sys.stderr)
+                # print("Gold V =================", file=sys.stderr)
+                # print(G_V, file=sys.stderr)
+                # print("Gold E =================", file=sys.stderr)
+                # print(G_E, file=sys.stderr)
+                # print("V ======================", file=sys.stderr)
+                # print(V, file=sys.stderr)
+                # print("E ======================", file=sys.stderr)
+                # print(E, file=sys.stderr)
+                # print("F =====================", file=sys.stderr)
+                # print(F, file=sys.stderr)
+                # print("==============================================================", file=sys.stderr)
+                # print("Maxspan", file=sys.stderr)
                 M = maxspan(V,E)
-                print(M, file=sys.stderr)
+                # print(M, file=sys.stderr)
                 for m in M:
                     if m in G_E:
                         self.model.update(F[m], 1.0)
@@ -221,7 +229,17 @@ class PerceptronWeighter():
                     else:
                         self.model.update(F[m], -1.0)
                     n += 1
-
+                
+            random.shuffle(sentences)
+            print()
+            print("Iter {0}: {1}/{2}={3}".format(iter_, c, n, _pc(c, n)))
+        # print("\nweights ============", file=sys.stderr)
+        # print(self.model.weights, file=sys.stderr)
+        self.model.average_weights()
+        # Pickle as a binary file
+        if save_loc is not None:
+            pickle.dump((self.model.weights),
+                         open(save_loc, 'wb'), -1)
 
 
                 # prev, prev2 = self.START
@@ -259,7 +277,7 @@ class PerceptronWeighter():
                 #     c += guess == tags[i]
                 #     n += 1
                 # break
-            break
+            # break
         print("\nweights ============", file=sys.stderr)
         print(self.model.weights, file=sys.stderr)
         #         print('\r', end='', file=sys.stderr)
@@ -280,8 +298,7 @@ class PerceptronWeighter():
         except IOError:
             print("Missing " +loc+" file.")
             sys.exit(-1)
-        self.model.weights, self.tagdict, self.classes = w_td_c
-        self.model.classes = self.classes
+        self.model.weights = w_td_c
         return None
 
     def _normalise(self, word):
@@ -310,10 +327,10 @@ class PerceptronWeighter():
         '''
         # print("Context ===============")
         # print(context)
-        print("Word =================")
-        print(depWord)
+        # print("Word =================")
+        # print(depWord)
         def add(name, *args):
-            print((name,) + tuple(args))
+            # print((name,) + tuple(args))
             features[' '.join((name,) + tuple(args))] += 1
 
         # i += len(self.START)
@@ -395,7 +412,7 @@ def trainer(corpus_file, model_file):
         sentences.append(sentence)
     
     # print(sentences[0])
-    t.train(sentences, save_loc=model_file, nr_iter=1)
+    t.train(sentences, save_loc=model_file, nr_iter=5)
 
 if len(sys.argv) == 3 and sys.argv[1] == '-t':
     trainer(sys.stdin, sys.argv[2])    

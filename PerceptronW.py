@@ -69,16 +69,25 @@ class AveragedPerceptron(object):
 
     def average_weights(self):
         '''Average weights from all iterations.'''
-        for feat, weights in self.weights.items():
-            new_feat_weights = {}
-            for clas, weight in weights.items():
-                param = (feat, clas)
-                total = self._totals[param]
-                total += (self.i - self._tstamps[param]) * weight
-                averaged = round(total / float(self.i), 3)
-                if averaged:
-                    new_feat_weights[clas] = averaged
-            self.weights[feat] = new_feat_weights
+        new_feat_weight = {}
+        for feat, weight in self.weights.items():
+            param = (feat)
+            total = self._totals[param]
+            total += (self.i - self._tstamps[param]) * weight
+            averaged = round(total / float(self.i), 3)
+            if averaged:
+                new_feat_weight[feat] = averaged
+        self.weights = new_feat_weight
+        # for feat, weights in self.weights.items():
+        #     new_feat_weights = {}
+        #     for clas, weight in weights.items():
+        #         param = (feat, clas)
+        #         total = self._totals[param]
+        #         total += (self.i - self._tstamps[param]) * weight
+        #         averaged = round(total / float(self.i), 3)
+        #         if averaged:
+        #             new_feat_weights[clas] = averaged
+        #     self.weights[feat] = new_feat_weights
         return None
 
     def save(self, path):
