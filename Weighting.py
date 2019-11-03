@@ -34,52 +34,144 @@ class PerceptronWeighter():
         if load:
             self.load(self.model_file)
 
-    def tag(self, corpus, tokenise=False):
+    def parse(self, corpus, tokenise=False):
         '''Tags a string `corpus`.'''
         # Assume untokenised corpus has \n between sentences and ' ' between words
         #s_split = SentenceTokenizer().tokenise if tokenise else lambda t: t.split('\n')
         #w_split = WordTokenizer().tokenise if tokenise else lambda s: s.split()
 
         reading = True
-        sentence = []
-        line = corpus.readline()
-        while reading:
-            if line == '\n':
-                # sentence boundary
-                prev, prev2 = self.START
-#                print('s:',sentence)
-                for words in sentence:    
-                    context = self.START + [self._normalise(w[1]) for w in sentence] + self.END
-                    for i, token in enumerate(sentence):
-                        tag = self.tagdict.get(token[1])
-                        if not tag:
-                            # if the word isn't "unambiguous", extract features
-                            features = self._get_features(i, token[1], context, prev, prev2)
-                            # make the prediction
-                            tag = self.model.predict(features)
-                        sentence[i][3] = tag
-                        prev2 = prev
-                        prev = tag
-                # print out the tokens and their tags
-                for words in sentence:    
-                    print('\t'.join(words))
-                print()
-                sentence = []    
-            elif line == '':
-                # we reached the end of the input
-                reading = False
-            elif line[0] == '#':
-                # line is a comment line
-                print(line.strip())
-                line = corpus.readline()
-                continue
-            else:
-                # normal conllu line
-                row = line.strip().split('\t')
-                sentence.append(row)
+        for sentence in corpus:
+            # print(c, n, '|||', sentence);
+            # print(n, end='', file=sys.stderr)
+            print("sentence =============", file=sys.stderr)
+            print(sentence, file=sys.stderr)
+            
+            # removing unnecessary lines
+            trimed_sentence = []
+            V = [0]
+            for token in sentence:
+                if "." in token[0]:
+                    continue
+                V.append(int(token[0]))
+                trimed_sentence.append(token)
+            
+            ###### Guessing weights ##############
+            E = []
+            # context = self.START + [self._normalise(w[1]) for w in trimed_sentence] + self.END
+            for i in range(0, len(V)):
+                for j in range(i + 1, len(V)):
+                    # print((i,j), file=sys.stderr)
+                    dep = j
+                    head = i
+                    token = trimed_sentence[j-1]
+                    depWord = token[1]
+                    depPOS = token[3]
+                    # head info
+                    if i == 0:
+                        headWord = "ROOT"
+                        headPOS = "ROOT"
+                    else:
+                        h_token = trimed_sentence[i-1]
+                        headWord = h_token[1]
+                        headPOS = h_token[3]
+
+                    # prev retrieval
+                    if j == 1:
+                        prev = "ROOT"
+                        prev2 = "START"
+                    elif j == 2:
+                        prev = trimed_sentence[j-2][3]
+                        prev2 = "ROOT"
+                    else:
+                        prev = trimed_sentence[j-2][3]
+                        prev2 = trimed_sentence[j-3][3]
+
+                    # get features
+                    feats = self._get_features(depWord, prev, prev2, headPOS, headWord, depPOS)
+                    # print(feats)
+                    guess = self.model.predict(feats)
+
+                    e_tmp =[head, dep, guess]
+                    E.append(e_tmp)
+                    # F[(head,dep)] = feats
+                if i >= 2:
+                    for j in range(1,i):
+                        dep = j
+                        head = i
+                        token = trimed_sentence[j-1]
+                        depWord = token[1]
+                        depPOS = token[3]
+
+                        # head info
+                        h_token = trimed_sentence[i-1]
+                        headWord = h_token[1]
+                        headPOS = h_token[3]
+
+                        # prev retrieval
+                        if j == 1:
+                            prev = "ROOT"
+                            prev2 = "START"
+                        elif j == 2:
+                            prev = trimed_sentence[j-2][3]
+                            prev2 = "ROOT"
+                        else:
+                            prev = trimed_sentence[j-2][3]
+                            prev2 = trimed_sentence[j-3][3]
+
+                        # get features
+                        feats = self._get_features(depWord, prev, prev2, headPOS, headWord, depPOS)
+                        # print(feats)
+                        guess = self.model.predict(feats)
+
+                        e_tmp =[head, dep, guess]
+                        E.append(e_tmp)
+            print(V, file=sys.stderr)
+            print(E, file=sys.stderr)
+            M = maxspan(V,E)
+            print(M)
+            break
+            
+        # sentence = []
+#         line = corpus.readline()
+        
+#         while reading:
+#             if line == '\n':
+#                 # sentence boundary
+#                 prev, prev2 = self.START
+# #                print('s:',sentence)
+#                 for words in sentence:    
+#                     context = self.START + [self._normalise(w[1]) for w in sentence] + self.END
+#                     for i, token in enumerate(sentence):
+#                         tag = self.tagdict.get(token[1])
+#                         if not tag:
+#                             # if the word isn't "unambiguous", extract features
+#                             features = self._get_features(i, token[1], context, prev, prev2)
+#                             # make the prediction
+#                             tag = self.model.predict(features)
+#                         sentence[i][3] = tag
+#                         prev2 = prev
+#                         prev = tag
+#                 # print out the tokens and their tags
+#                 for words in sentence:    
+#                     print('\t'.join(words))
+#                 print()
+#                 sentence = []    
+#             elif line == '':
+#                 # we reached the end of the input
+#                 reading = False
+#             elif line[0] == '#':
+#                 # line is a comment line
+#                 print(line.strip())
+#                 line = corpus.readline()
+#                 continue
+#             else:
+#                 # normal conllu line
+#                 row = line.strip().split('\t')
+#                 sentence.append(row)
                 
-            # read the next line
-            line = corpus.readline()
+#             # read the next line
+#             line = corpus.readline()
 
         return 
 
@@ -384,13 +476,26 @@ class PerceptronWeighter():
 
 ###############################################################################
 
-def tagger(corpus_file, model_file):
+def parser(corpus_file, model_file):
     ''' tag some text. 
     :param corpus_file is a file handle
     :param model_file is a saved model file
     '''
-    t = PerceptronTagger(model_file)
-    t.tag(corpus_file)
+    corpus_file = open(corpus_file, "r")
+
+    sentences = []
+    for sent in corpus_file.read().split('\n\n'):
+        sentence = []
+        for token in sent.split('\n'):
+            if token.strip() == '':
+                continue
+            if token[0] == '#':
+                continue
+            sentence.append(tuple(token.strip().split('\t')))
+        sentences.append(sentence)
+
+    t = PerceptronWeighter(model_file)
+    t.parse(sentences)
 
 def trainer(corpus_file, model_file):
     ''' train a model 
@@ -412,7 +517,7 @@ def trainer(corpus_file, model_file):
         sentences.append(sentence)
     
     # print(sentences[0])
-    t.train(sentences, save_loc=model_file, nr_iter=5)
+    t.train(sentences, save_loc=model_file, nr_iter=10)
 
 if len(sys.argv) == 3 and sys.argv[1] == '-t':
     trainer(sys.stdin, sys.argv[2])    

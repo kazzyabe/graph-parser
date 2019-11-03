@@ -1,14 +1,20 @@
 from Weighting import PerceptronWeighter
+from tagger import PerceptronTagger
 
 class graph_based_parser:
-    def __init__(self, m="model", load=True):
+    def __init__(self, mPOS="model.dat",loadPOS=True, mw="model", loadw=True):
         # POS
-        
+        self.tagger = PerceptronTagger(mPOS,loadPOS)
+
         # weighter
-        if load:
-            self.weighter = PerceptronWeighter(m,load)
-        else:
-            self.weighter = PerceptronWeighter(m, load)
+        self.weighter = PerceptronWeighter(mw,loadw)
+    
+    def parse(self, corpus):
+        '''
+        Parse the given corpus
+        '''
+        
+
     def load_data(self, f):
         '''
         load a training data(UD)
