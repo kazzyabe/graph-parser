@@ -2,6 +2,7 @@ import sys
 
 sys.path.insert(0, "conllu-perceptron-tagger")
 sys.stderr = open("debugg.log", "w")
+sys.stdout = open("result.conllu", "w")
 
 import random
 from collections import defaultdict
@@ -88,7 +89,7 @@ class PerceptronWeighter():
                         prev2 = trimed_sentence[j-3][3]
 
                     # get features
-                    feats = self._get_features(depWord, prev, prev2, headPOS, headWord, depPOS)
+                    feats = self._get_features(self._normalise(depWord), prev, prev2, headPOS, self._normalise(headWord), depPOS)
                     # print(feats)
                     guess = self.model.predict(feats)
 
@@ -120,17 +121,51 @@ class PerceptronWeighter():
                             prev2 = trimed_sentence[j-3][3]
 
                         # get features
-                        feats = self._get_features(depWord, prev, prev2, headPOS, headWord, depPOS)
+                        feats = self._get_features(self._normalise(depWord), prev, prev2, headPOS, self._normalise(headWord), depPOS)
                         # print(feats)
                         guess = self.model.predict(feats)
 
                         e_tmp =[head, dep, guess]
                         E.append(e_tmp)
-            print(V, file=sys.stderr)
-            print(E, file=sys.stderr)
+            # print(V, file=sys.stderr)
+            # print(E, file=sys.stderr)
             M = maxspan(V,E)
-            print(M)
-            break
+            if M:
+                print("#\n#", file=sys.stdout)
+            for token in sentence:
+                if "." in token[0]:
+                    p_str = ""
+                    i = 0
+                    while i < len(token):
+                        if i == 6:
+                            tmp = str(token[i])
+                        else:
+                            tmp = token[i]
+                        p_str += tmp + "\t"
+                        i += 1
+                    p_str = p_str[0:-1]
+                    print(p_str, file=sys.stdout)
+                elif token ==[]:
+                    print("\n", file=sys.stdout)
+                else:
+                    dep = int(token[0])
+                    for m in M:
+                        if m[1] == dep:
+                            # token[]
+                            p_str = ""
+                            i = 0
+                            while i < len(token):
+                                if i == 6:
+                                    tmp = str(m[0])
+                                    # print(tmp, file=sys.stderr)
+                                else:
+                                    tmp = token[i]
+                                p_str += tmp + "\t"
+                                i += 1
+                            p_str = p_str[0:-1]
+                            print(p_str, file=sys.stdout)
+            if M:
+                print("", file=sys.stdout)
             
         # sentence = []
 #         line = corpus.readline()
@@ -261,7 +296,7 @@ class PerceptronWeighter():
                             prev2 = trimed_sentence[j-3][3]
 
                         # get features
-                        feats = self._get_features(depWord, prev, prev2, headPOS, headWord, depPOS)
+                        feats = self._get_features(self._normalise(depWord), prev, prev2, headPOS, self._normalise(headWord), depPOS)
                         # print(feats)
                         guess = self.model.predict(feats)
 
@@ -293,7 +328,7 @@ class PerceptronWeighter():
                                 prev2 = trimed_sentence[j-3][3]
 
                             # get features
-                            feats = self._get_features(depWord, prev, prev2, headPOS, headWord, depPOS)
+                            feats = self._get_features(self._normalise(depWord), prev, prev2, headPOS, self._normalise(headWord), depPOS)
                             # print(feats)
                             guess = self.model.predict(feats)
 
@@ -321,6 +356,9 @@ class PerceptronWeighter():
                     else:
                         self.model.update(F[m], -1.0)
                     n += 1
+                for m in G_E:
+                    if not (m in M):
+                        self.model.update(F[m],1.0)
                 
             random.shuffle(sentences)
             print()
@@ -517,7 +555,7 @@ def trainer(corpus_file, model_file):
         sentences.append(sentence)
     
     # print(sentences[0])
-    t.train(sentences, save_loc=model_file, nr_iter=10)
+    t.train(sentences, save_loc=model_file, nr_iter=5)
 
 if len(sys.argv) == 3 and sys.argv[1] == '-t':
     trainer(sys.stdin, sys.argv[2])    

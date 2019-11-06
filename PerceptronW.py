@@ -56,7 +56,7 @@ class AveragedPerceptron(object):
 
         self.i += 1
         for f in features:
-            weight = self.weights.setdefault(f, 0.0)
+            weight = self.weights.setdefault(f, random.random())
             upd_feat(f, weight, val)
 
         # if truth == guess:

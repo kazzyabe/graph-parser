@@ -3,3 +3,5 @@ UD_English-EWT
 *.log
 POSmodel.dat
 model
+testPOStagged.conllu
+ms_testing.py
