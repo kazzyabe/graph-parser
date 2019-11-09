@@ -41,7 +41,7 @@ class AveragedPerceptron(object):
         # return max(self.classes, key=lambda label: (scores[label], label))
         return score
 
-    def update(self, features, val):
+    def update(self, gold, guessed):# features, val):
         '''Update the feature weights.'''
         def upd_feat(f, w, v):
             param = (f)
@@ -54,10 +54,18 @@ class AveragedPerceptron(object):
         #     self._tstamps[param] = self.i
         #     self.weights[f][c] = w + v
 
-        self.i += 1
-        for f in features:
-            weight = self.weights.setdefault(f, random.random())
-            upd_feat(f, weight, val)
+        # self.i += 1
+        # for f in features:
+        #     weight = self.weights.setdefault(f, random.random())
+        #     upd_feat(f, weight, val)
+        for g in gold:
+            if not (g in guessed):
+                weight = self.weights.setdefault(g, random.random())
+                upd_feat(g, weight, 1)
+        for guess in guessed:
+            if not (guess in gold):
+                weight = self.weights.setdefault(guess, random.random())
+                upd_feat(guess, weight, -1)
 
         # if truth == guess:
         #     return None

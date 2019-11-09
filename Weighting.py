@@ -2,7 +2,7 @@ import sys
 
 sys.path.insert(0, "conllu-perceptron-tagger")
 sys.stderr = open("debugg.log", "w")
-sys.stdout = open("result.conllu", "w")
+# sys.stdout = open("result.conllu", "w")
 
 import random
 from collections import defaultdict
@@ -127,9 +127,10 @@ class PerceptronWeighter():
 
                         e_tmp =[head, dep, guess]
                         E.append(e_tmp)
-            # print(V, file=sys.stderr)
-            # print(E, file=sys.stderr)
+            print(V, file=sys.stderr)
+            print(E, file=sys.stderr)
             M = maxspan(V,E)
+            print("M ===================\n", M, file=sys.stderr)
             if M:
                 print("#\n#", file=sys.stdout)
             for token in sentence:
@@ -166,6 +167,7 @@ class PerceptronWeighter():
                             print(p_str, file=sys.stdout)
             if M:
                 print("", file=sys.stdout)
+            break
             
         # sentence = []
 #         line = corpus.readline()
@@ -349,16 +351,65 @@ class PerceptronWeighter():
                 # print("Maxspan", file=sys.stderr)
                 M = maxspan(V,E)
                 # print(M, file=sys.stderr)
+
+                # Caluculate the score for M
+                M_score = 0
                 for m in M:
-                    if m in G_E:
-                        self.model.update(F[m], 1.0)
-                        c += 1
-                    else:
-                        self.model.update(F[m], -1.0)
-                    n += 1
-                for m in G_E:
-                    if not (m in M):
-                        self.model.update(F[m],1.0)
+                    M_score += self.model.predict(F[m])
+                
+                # Calculate the score for G_E
+                G_score = 0
+                for g in G_E:
+                    G_score += self.model.predict(F[g])
+
+                # print("M score ====================\n", M_score, file=sys.stderr)
+                # print("G score ====================\n", G_score, file=sys.stderr)
+
+                # g_feat = []
+                # for g in G_E:
+                #     g_feat += F[g]
+                # print("G feat ====================\n", g_feat)
+                # feat = []
+                # for m in M:
+                #     feat += F[m]
+                # print("feat ======================\n", feat)
+
+                # dictionary of features, keys = dependent
+                GM_dep_feat = {}
+                for g in G_E:
+                    for m in M:
+                        if g[1] == m[1]:
+                            GM_dep_feat[g[1]] = [F[g].keys(),F[m].keys()]
+                # print("GM_feat =====================\n", GM_dep_feat)
+
+                # GM_head_feat = {}
+                # for g in G_E:
+                #     for m in M:
+                #         if g[0] == m[0]:
+                #             GM
+
+                # count = 0
+                # for m in M:
+                #     if m in G_E:
+                #         count += 1
+                # print("count ===================\n", count)
+
+                ###### update
+                self.model.i += 1
+                for k in GM_dep_feat.keys():
+                    gold = GM_dep_feat[k][0]
+                    guessed = GM_dep_feat[k][1]
+                    self.model.update(gold, guessed)
+                # for m in M:
+                #     if m in G_E:
+                #         self.model.update(F[m], 1.0)
+                #         c += 1
+                #     else:
+                #         self.model.update(F[m], -1.0)
+                #     n += 1
+                # for m in G_E:
+                #     if not (m in M):
+                #         self.model.update(F[m],1.0)
                 
             random.shuffle(sentences)
             print()
@@ -460,7 +511,7 @@ class PerceptronWeighter():
         # print("Word =================")
         # print(depWord)
         def add(name, *args):
-            # print((name,) + tuple(args))
+            print((name,) + tuple(args), file=sys.stderr)
             features[' '.join((name,) + tuple(args))] += 1
 
         # i += len(self.START)
@@ -487,8 +538,13 @@ class PerceptronWeighter():
         ##########  features for edge weighting
         add('head POS', headPOS)
         add("head word", headWord)
+        add("head POS word", headPOS, headWord)
         add('dependent POS', depPOS)
         add('dependent word', depWord)
+        add('dep POS word', depPOS, depWord)
+        add("head dep POS", headPOS, depPOS)
+        add("head dep Word", headWord, depWord)
+
         #print(word, '|||', features)
         return features
 
@@ -555,7 +611,7 @@ def trainer(corpus_file, model_file):
         sentences.append(sentence)
     
     # print(sentences[0])
-    t.train(sentences, save_loc=model_file, nr_iter=5)
+    t.train(sentences, save_loc=model_file, nr_iter=10)
 
 if len(sys.argv) == 3 and sys.argv[1] == '-t':
     trainer(sys.stdin, sys.argv[2])    
