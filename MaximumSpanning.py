@@ -64,6 +64,7 @@ def cyclehelp(a, visited, adjacent):
         res = []
         for n in adjacent[a]:
             tmp = cyclehelp(n, visited, adjacent)
+            print("tmp in help =================\n", tmp,  file=sys.stderr)
             if tmp:
                 res += [tmp]
         return res
@@ -85,6 +86,7 @@ def detcycle(V,E):
     for v in V[1:]:
         for a in adjacent[v]:
             tmp = cyclehelp(a,[v], adjacent)
+            print("tmp in main ====================\n", tmp, file=sys.stderr)
             if tmp:
                 res += tmp
     if res:
@@ -124,7 +126,11 @@ def contraction(V,E,C):
     adjacent = adjacentT(V,E)
     # # print(adjacent)
     w = weight(E)
+    print("V ================\n", V, file=sys.stderr)
+    print("E ================\n", E, file=sys.stderr)
+    print("C ================\n", C, file=sys.stderr)
     for c in C:
+        print(c, file=sys.stderr)
         V.remove(c)
     
     # print("(c,v)", file=sys.stderr)
@@ -190,15 +196,15 @@ def maxspan(V,E):
     # if there are cycles
     if c:
         # continue
-        # print("Cycles ==================", file=sys.stderr)
-        # print(cycles, file=sys.stderr)
+        print("Cycles ==================", file=sys.stderr)
+        print(cycles, file=sys.stderr)
         newV, newE, new_v, ep = contraction(V,E,cycles[0])
         # print("Adjacency after contraction", file=sys.stderr)
         # print(adjacentT(newV,newE), file=sys.stderr)
-        # print("======================Contraction=====================", file=sys.stderr)
-        # print("Cycles ==================", cycles, file=sys.stderr)
-        # print("newV =========================\n",newV, file=sys.stderr)
-        # print("newE ===========================\n", newE, file=sys.stderr)
+        print("======================Contraction=====================", file=sys.stderr)
+        print("Cycles ==================", cycles, file=sys.stderr)
+        print("newV =========================\n",newV, file=sys.stderr)
+        print("newE ===========================\n", newE, file=sys.stderr)
         # print("ep =============================\n", ep, file=sys.stderr)
 
         # print("================ Next maxspan call =====================", file=sys.stderr)
