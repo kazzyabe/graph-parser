@@ -2,7 +2,7 @@ import sys
 
 sys.path.insert(0, "conllu-perceptron-tagger")
 sys.stderr = open("debugg.log", "w")
-# sys.stdout = open("result.conllu", "w")
+sys.stdout = open("result.conllu", "w")
 
 import random
 from collections import defaultdict
@@ -167,7 +167,7 @@ class PerceptronWeighter():
                             print(p_str, file=sys.stdout)
             if M:
                 print("", file=sys.stdout)
-            break
+            # break
             
         # sentence = []
 #         line = corpus.readline()
@@ -399,7 +399,7 @@ class PerceptronWeighter():
                 for k in GM_dep_feat.keys():
                     gold = GM_dep_feat[k][0]
                     guessed = GM_dep_feat[k][1]
-                    self.model.update(gold, guessed)
+                    c, n = self.model.update(gold, guessed, c, n)
                 # for m in M:
                 #     if m in G_E:
                 #         self.model.update(F[m], 1.0)

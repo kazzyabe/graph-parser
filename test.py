@@ -1,11 +1,11 @@
 from Weighting import *
 
 # corpus_file = open("UD_English-EWT/en_ewt-ud-dev.conllu", "r")
-corpus_file = "UD_English-EWT/en_ewt-ud-dev.conllu"
-trainer(corpus_file, "Parser.dat")
-
 # corpus_file = "UD_English-EWT/en_ewt-ud-dev.conllu"
-# parser(corpus_file, "Parser.dat")
+# trainer(corpus_file, "Parser.dat")
+
+corpus_file = "UD_English-EWT/en_ewt-ud-dev.conllu"
+parser(corpus_file, "Parser.dat")
 
 
 

@@ -11,8 +11,23 @@ def adjacentT(V, E):
         if e[0] in V and e[1] in V:
             # # print(e[0])
             adjacent[e[0]] += [e[1]]
+    
+    for k in adjacent.keys():
+        adjacent[k] = sorted(adjacent[k])
 
     return adjacent
+# def adjacentT(V, E):
+#     adjacent = {}
+#     for v in V:
+#         adjacent[v] = []
+    
+#     # # print(adjacent)
+#     for e in E:
+#         if e[0] in V and e[1] in V:
+#             # # print(e[0])
+#             adjacent[e[0]] += [e[1]]
+
+#     return adjacent
 
 def weight(E):
     w = {}
@@ -64,10 +79,10 @@ def cyclehelp(a, visited, adjacent):
         res = []
         for n in adjacent[a]:
             tmp = cyclehelp(n, visited, adjacent)
-            print("tmp in help =================\n", tmp,  file=sys.stderr)
             if tmp:
-                res += [tmp]
-        return res
+                return tmp
+                # print("tmp in help =================\n", tmp,  file=sys.stderr)
+        # return res
 
 def detcycle(V,E):
     """
@@ -82,17 +97,73 @@ def detcycle(V,E):
     adjacent = adjacentT(V,E)
 
     # Cycle detection by DFS
-    res = []
+    res = None
     for v in V[1:]:
         for a in adjacent[v]:
-            tmp = cyclehelp(a,[v], adjacent)
-            print("tmp in main ====================\n", tmp, file=sys.stderr)
-            if tmp:
-                res += tmp
-    if res:
-        return True, res
-    else:
+            res = cyclehelp(a,[v], adjacent)
+            # if tmp:
+            #     res += tmp
+            #     print("tmp in main ====================\n", tmp, file=sys.stderr)
+            #     print("res in main ====================\n", res, file=sys.stderr)
+            if res:
+                return True, res
+    if not res:
         return False, []
+
+# def cyclehelp(a, visited, adjacent):
+#     """
+#     detcycle helper
+#     recursive function which keeps looking for cycles
+#     a: current vertex
+#     visited: a list of already visited vertecies
+#     adjacent: a dictionary for adjacency
+
+#     return cycles if found
+#     otherwise return False
+#     """
+#     # # print(a,visited,adjacent)
+#     if a in visited:
+#         # # print("CYCLE: ", visited)
+#         # visited += [a]
+#         return visited
+#     elif adjacent[a] == []:
+#         # # print("NO ADJACENT")
+#         return False
+#     else:
+#         visited += [a]
+#         res = []
+#         for n in adjacent[a]:
+#             tmp = cyclehelp(n, visited, adjacent)
+#             if tmp:
+#                 res += [tmp]
+#                 print("tmp in help =================\n", tmp,  file=sys.stderr)
+#         return res
+
+# def detcycle(V,E):
+#     """
+#     Detect cycles
+
+#     V: vertices[0...n]
+#     E: adges (i,j,w) where i is the head, j is the dependent, w is the weight
+
+#     return True, cycles if any cycles is found
+#     otherwise, return False
+#     """
+#     adjacent = adjacentT(V,E)
+
+#     # Cycle detection by DFS
+#     res = []
+#     for v in V[1:]:
+#         for a in adjacent[v]:
+#             tmp = cyclehelp(a,[v], adjacent)
+#             if tmp:
+#                 res += tmp
+#                 print("tmp in main ====================\n", tmp, file=sys.stderr)
+#                 print("res in main ====================\n", res, file=sys.stderr)
+#     if res:
+#         return True, res
+#     else:
+#         return False, []
 
 
 
@@ -192,17 +263,17 @@ def maxspan(V,E):
     
     # print("Current M ===========", file=sys.stderr)
     # print(M, file=sys.stderr)
-    c, cycles = detcycle(V, M)
+    c, cycle = detcycle(V, M)
     # if there are cycles
     if c:
         # continue
-        print("Cycles ==================", file=sys.stderr)
-        print(cycles, file=sys.stderr)
-        newV, newE, new_v, ep = contraction(V,E,cycles[0])
+        print("Cycle ==================", file=sys.stderr)
+        print(cycle, file=sys.stderr)
+        newV, newE, new_v, ep = contraction(V,E,cycle)
         # print("Adjacency after contraction", file=sys.stderr)
         # print(adjacentT(newV,newE), file=sys.stderr)
         print("======================Contraction=====================", file=sys.stderr)
-        print("Cycles ==================", cycles, file=sys.stderr)
+        print("Cycle ==================", cycle, file=sys.stderr)
         print("newV =========================\n",newV, file=sys.stderr)
         print("newE ===========================\n", newE, file=sys.stderr)
         # print("ep =============================\n", ep, file=sys.stderr)
@@ -218,13 +289,13 @@ def maxspan(V,E):
         # AND adding edges for the cycle,
         ad = {}
         i = 0
-        while i < len(cycles[0]):
-            if i == len(cycles[0]) - 1:
-                head = cycles[0][i]
-                dep = cycles[0][0]
+        while i < len(cycle):
+            if i == len(cycle) - 1:
+                head = cycle[i]
+                dep = cycle[0]
             else:
-                head = cycles[0][i]
-                dep = cycles[0][i+1]
+                head = cycle[i]
+                dep = cycle[i+1]
             M += [(head,dep)]
             ad[head] = [dep]
             i += 1
@@ -235,7 +306,7 @@ def maxspan(V,E):
         for m in M:
             if m[1] == new_v:
                 wj = ep[m]
-                for wk in cycles[0]:
+                for wk in cycle:
                     if wj in ad[wk]:
                         wkwj.append((wk,wj))
         # print("wkwj ===================\n", wkwj, file=sys.stderr)
