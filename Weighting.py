@@ -2,7 +2,7 @@ import sys
 
 sys.path.insert(0, "conllu-perceptron-tagger")
 sys.stderr = open("debugg.log", "w")
-sys.stdout = open("result.conllu", "w")
+sys.stdout = open("dev_result.conllu", "w")
 
 import random
 from collections import defaultdict
