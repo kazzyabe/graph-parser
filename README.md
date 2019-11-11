@@ -13,7 +13,8 @@ Will use conll format and output each word tagged with part of speech and the ro
 1. ex. https://github.com/UniversalDependencies/UD_English-EWT.git
 
 ## dev evaluation
-### on dev.conllu
+### 10 iteration
+#### on dev.conllu
 ```
 Metrics    | Precision |    Recall |  F1 Score | AligndAcc
 -----------+-----------+-----------+-----------+-----------
@@ -28,7 +29,7 @@ Lemmas     |    100.00 |    100.00 |    100.00 |    100.00
 UAS        |     62.59 |     62.59 |     62.59 |     62.59
 LAS        |     62.59 |     62.59 |     62.59 |     62.59
 ```
-### on train.conllu
+#### on train.conllu
 ```
 Metrics    | Precision |    Recall |  F1 Score | AligndAcc
 -----------+-----------+-----------+-----------+-----------
@@ -42,6 +43,22 @@ AllTags    |    100.00 |    100.00 |    100.00 |    100.00
 Lemmas     |    100.00 |    100.00 |    100.00 |    100.00
 UAS        |     29.42 |     29.42 |     29.42 |     29.42
 LAS        |     29.42 |     29.42 |     29.42 |     29.42
+```
+
+### 20 iteration
+```
+Metrics    | Precision |    Recall |  F1 Score | AligndAcc
+-----------+-----------+-----------+-----------+-----------
+Tokens     |    100.00 |    100.00 |    100.00 |
+Sentences  |    100.00 |    100.00 |    100.00 |
+Words      |    100.00 |    100.00 |    100.00 |
+UPOS       |    100.00 |    100.00 |    100.00 |    100.00
+XPOS       |    100.00 |    100.00 |    100.00 |    100.00
+Feats      |    100.00 |    100.00 |    100.00 |    100.00
+AllTags    |    100.00 |    100.00 |    100.00 |    100.00
+Lemmas     |    100.00 |    100.00 |    100.00 |    100.00
+UAS        |     74.23 |     74.23 |     74.23 |     74.23
+LAS        |     74.23 |     74.23 |     74.23 |     74.23
 ```
 
 ## train evaluation

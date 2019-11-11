@@ -355,6 +355,9 @@ class PerceptronWeighter():
                 # Caluculate the score for M
                 M_score = 0
                 for m in M:
+                    if m in G_E:
+                        c += 1
+                    n += 1
                     M_score += self.model.predict(F[m])
                 
                 # Calculate the score for G_E
@@ -395,11 +398,11 @@ class PerceptronWeighter():
                 # print("count ===================\n", count)
 
                 ###### update
-                self.model.i += 1
+                # self.model.i += 1
                 for k in GM_dep_feat.keys():
                     gold = GM_dep_feat[k][0]
                     guessed = GM_dep_feat[k][1]
-                    c, n = self.model.update(gold, guessed, c, n)
+                    self.model.update(gold, guessed)
                 # for m in M:
                 #     if m in G_E:
                 #         self.model.update(F[m], 1.0)
@@ -611,7 +614,7 @@ def trainer(corpus_file, model_file):
         sentences.append(sentence)
     
     # print(sentences[0])
-    t.train(sentences, save_loc=model_file, nr_iter=10)
+    t.train(sentences, save_loc=model_file, nr_iter=20)
 
 if len(sys.argv) == 3 and sys.argv[1] == '-t':
     trainer(sys.stdin, sys.argv[2])    
