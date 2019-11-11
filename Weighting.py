@@ -2,7 +2,7 @@ import sys
 
 sys.path.insert(0, "conllu-perceptron-tagger")
 sys.stderr = open("debugg.log", "w")
-sys.stdout = open("dev_result10mod.conllu", "w")
+sys.stdout = open("dev_result10mod2.conllu", "w")
 # sys.stdout = open("feat.log", "w")
 
 import random
@@ -549,6 +549,7 @@ class PerceptronWeighter():
         add("head dep POS", headPOS, depPOS)
         add("head dep Word", headWord, depWord)
         add("|head - dep|", str(abs(head - dep)))
+        add("dep - head", str(dep-head))
 
         #print(word, '|||', features)
         return features
