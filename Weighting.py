@@ -2,7 +2,8 @@ import sys
 
 sys.path.insert(0, "conllu-perceptron-tagger")
 sys.stderr = open("debugg.log", "w")
-sys.stdout = open("dev_result.conllu", "w")
+sys.stdout = open("dev_result10mod.conllu", "w")
+# sys.stdout = open("feat.log", "w")
 
 import random
 from collections import defaultdict
@@ -24,7 +25,7 @@ class PerceptronWeighter():
     :param load: Load the pickled model upon instantiation.
     '''
 
-    START = ['-START-', '-START2-']
+    START = ['-START-', 'ROOT']
     END = ['-END-', '-END2-']
 
     def __init__(self, fname, load=True):
@@ -59,7 +60,7 @@ class PerceptronWeighter():
             
             ###### Guessing weights ##############
             E = []
-            # context = self.START + [self._normalise(w[1]) for w in trimed_sentence] + self.END
+            context = self.START + [self._normalise(w[1]) for w in trimed_sentence] + self.END
             for i in range(0, len(V)):
                 for j in range(i + 1, len(V)):
                     # print((i,j), file=sys.stderr)
@@ -89,7 +90,7 @@ class PerceptronWeighter():
                         prev2 = trimed_sentence[j-3][3]
 
                     # get features
-                    feats = self._get_features(self._normalise(depWord), prev, prev2, headPOS, self._normalise(headWord), depPOS)
+                    feats = self._get_features(self._normalise(depWord), prev, prev2, headPOS, self._normalise(headWord), depPOS, context, dep, head)
                     # print(feats)
                     guess = self.model.predict(feats)
 
@@ -121,7 +122,7 @@ class PerceptronWeighter():
                             prev2 = trimed_sentence[j-3][3]
 
                         # get features
-                        feats = self._get_features(self._normalise(depWord), prev, prev2, headPOS, self._normalise(headWord), depPOS)
+                        feats = self._get_features(self._normalise(depWord), prev, prev2, headPOS, self._normalise(headWord), depPOS, context, dep, head)
                         # print(feats)
                         guess = self.model.predict(feats)
 
@@ -268,7 +269,7 @@ class PerceptronWeighter():
                 V = copy(G_V)
                 E = []
                 F = {}
-                # context = self.START + [self._normalise(w[1]) for w in trimed_sentence] + self.END
+                context = self.START + [self._normalise(w[1]) for w in trimed_sentence] + self.END
                 for i in range(0, len(V)):
                     for j in range(i + 1, len(V)):
                         print((i,j), file=sys.stderr)
@@ -298,7 +299,7 @@ class PerceptronWeighter():
                             prev2 = trimed_sentence[j-3][3]
 
                         # get features
-                        feats = self._get_features(self._normalise(depWord), prev, prev2, headPOS, self._normalise(headWord), depPOS)
+                        feats = self._get_features(self._normalise(depWord), prev, prev2, headPOS, self._normalise(headWord), depPOS, context, dep, head)
                         # print(feats)
                         guess = self.model.predict(feats)
 
@@ -330,7 +331,7 @@ class PerceptronWeighter():
                                 prev2 = trimed_sentence[j-3][3]
 
                             # get features
-                            feats = self._get_features(self._normalise(depWord), prev, prev2, headPOS, self._normalise(headWord), depPOS)
+                            feats = self._get_features(self._normalise(depWord), prev, prev2, headPOS, self._normalise(headWord), depPOS, context, dep, head)
                             # print(feats)
                             guess = self.model.predict(feats)
 
@@ -504,7 +505,7 @@ class PerceptronWeighter():
             return word.lower()
     
     # def _get_features(self, i, word, context, prev, prev2, headPOS, headW, dependentPOS):
-    def _get_features(self, depWord, prev, prev2, headPOS, headWord, depPOS):
+    def _get_features(self, depWord, prev, prev2, headPOS, headWord, depPOS, context, dep, head):
         '''Map tokens into a feature representation, implemented as a
         {hashable: float} dict. If the features change, a new model must be
         trained.
@@ -514,10 +515,10 @@ class PerceptronWeighter():
         # print("Word =================")
         # print(depWord)
         def add(name, *args):
-            print((name,) + tuple(args), file=sys.stderr)
+            # print((name,) + tuple(args), file=sys.stdout)
             features[' '.join((name,) + tuple(args))] += 1
 
-        # i += len(self.START)
+        dep += len(self.START) - 1
         features = defaultdict(int)
         # It's useful to have a constant feature, which acts sort of like a prior
         add('bias')
@@ -526,18 +527,18 @@ class PerceptronWeighter():
         add('i-1 tag', prev)
         add('i-2 tag', prev2)
         add('i tag+i-2 tag', prev, prev2)
-        # print("i =======")
-        # print(i)
+        # print("dep =======")
+        # print(dep)
         # print("context ==========")
         # print(context)
-        # add('i word', context[i])
-        # add('i-1 tag+i word', prev, context[i])
-        # add('i-1 word', context[i-1])
-        # add('i-1 suffix', context[i-1][-3:])
-        # add('i-2 word', context[i-2])
-        # add('i+1 word', context[i+1])
-        # add('i+1 suffix', context[i+1][-3:])
-        # add('i+2 word', context[i+2])
+        # add('i word', context[dep])
+        # add('i-1 tag+i word', prev, context[dep])
+        # add('i-1 word', context[dep-1])
+        # add('i-1 suffix', context[dep-1][-3:])
+        # add('i-2 word', context[dep-2])
+        # add('i+1 word', context[dep+1])
+        # add('i+1 suffix', context[dep+1][-3:])
+        # add('i+2 word', context[dep+2])
         ##########  features for edge weighting
         add('head POS', headPOS)
         add("head word", headWord)
@@ -547,6 +548,7 @@ class PerceptronWeighter():
         add('dep POS word', depPOS, depWord)
         add("head dep POS", headPOS, depPOS)
         add("head dep Word", headWord, depWord)
+        add("|head - dep|", str(abs(head - dep)))
 
         #print(word, '|||', features)
         return features

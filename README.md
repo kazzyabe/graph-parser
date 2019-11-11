@@ -29,6 +29,23 @@ Lemmas     |    100.00 |    100.00 |    100.00 |    100.00
 UAS        |     62.70 |     62.70 |     62.70 |     62.70
 LAS        |     62.70 |     62.70 |     62.70 |     62.70
 ```
+
+#### on dev.conllu with distance between head and dependent
+```
+Metrics    | Precision |    Recall |  F1 Score | AligndAcc
+-----------+-----------+-----------+-----------+-----------
+Tokens     |    100.00 |    100.00 |    100.00 |
+Sentences  |    100.00 |    100.00 |    100.00 |
+Words      |    100.00 |    100.00 |    100.00 |
+UPOS       |    100.00 |    100.00 |    100.00 |    100.00
+XPOS       |    100.00 |    100.00 |    100.00 |    100.00
+Feats      |    100.00 |    100.00 |    100.00 |    100.00
+AllTags    |    100.00 |    100.00 |    100.00 |    100.00
+Lemmas     |    100.00 |    100.00 |    100.00 |    100.00
+UAS        |     76.91 |     76.91 |     76.91 |     76.91
+LAS        |     76.91 |     76.91 |     76.91 |     76.91
+```
+
 #### on train.conllu
 ```
 Metrics    | Precision |    Recall |  F1 Score | AligndAcc
