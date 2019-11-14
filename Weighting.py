@@ -2,7 +2,7 @@ import sys
 
 sys.path.insert(0, "conllu-perceptron-tagger")
 sys.stderr = open("debugg.log", "w")
-sys.stdout = open("test_result10mod2.conllu", "w")
+sys.stdout = open("train_result20mod2.conllu", "w")
 # sys.stdout = open("feat.log", "w")
 
 import random
@@ -617,7 +617,7 @@ def trainer(corpus_file, model_file):
         sentences.append(sentence)
     
     # print(sentences[0])
-    t.train(sentences, save_loc=model_file, nr_iter=10)
+    t.train(sentences, save_loc=model_file, nr_iter=20)
 
 if len(sys.argv) == 3 and sys.argv[1] == '-t':
     trainer(sys.stdin, sys.argv[2])    
