@@ -5,12 +5,8 @@ corpus_file = "testPOStagged.conllu"
 # corpus_file = "UD_English-EWT/en_ewt-ud-dev.conllu"
 # corpus_file = "UD_English-EWT/en_ewt-ud-train.conllu"
 # trainer(corpus_file, "Parser_train20mod2.dat")
-parser(corpus_file, "Parser_train20mod2.dat")
-
-
-
-
-
+# parser(corpus_file, "Parser_train20mod2.dat")
+trainer(corpus_file, "testing.dat")
 
 
 

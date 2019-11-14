@@ -2,7 +2,7 @@ import sys
 
 sys.path.insert(0, "conllu-perceptron-tagger")
 sys.stderr = open("debugg.log", "w")
-sys.stdout = open("train_result20mod2.conllu", "w")
+# sys.stdout = open("train_result20mod2.conllu", "w")
 # sys.stdout = open("feat.log", "w")
 
 import random
@@ -168,48 +168,6 @@ class PerceptronWeighter():
                             print(p_str, file=sys.stdout)
             if M:
                 print("", file=sys.stdout)
-            # break
-            
-        # sentence = []
-#         line = corpus.readline()
-        
-#         while reading:
-#             if line == '\n':
-#                 # sentence boundary
-#                 prev, prev2 = self.START
-# #                print('s:',sentence)
-#                 for words in sentence:    
-#                     context = self.START + [self._normalise(w[1]) for w in sentence] + self.END
-#                     for i, token in enumerate(sentence):
-#                         tag = self.tagdict.get(token[1])
-#                         if not tag:
-#                             # if the word isn't "unambiguous", extract features
-#                             features = self._get_features(i, token[1], context, prev, prev2)
-#                             # make the prediction
-#                             tag = self.model.predict(features)
-#                         sentence[i][3] = tag
-#                         prev2 = prev
-#                         prev = tag
-#                 # print out the tokens and their tags
-#                 for words in sentence:    
-#                     print('\t'.join(words))
-#                 print()
-#                 sentence = []    
-#             elif line == '':
-#                 # we reached the end of the input
-#                 reading = False
-#             elif line[0] == '#':
-#                 # line is a comment line
-#                 print(line.strip())
-#                 line = corpus.readline()
-#                 continue
-#             else:
-#                 # normal conllu line
-#                 row = line.strip().split('\t')
-#                 sentence.append(row)
-                
-#             # read the next line
-#             line = corpus.readline()
 
         return 
 
@@ -426,54 +384,8 @@ class PerceptronWeighter():
             pickle.dump((self.model.weights),
                          open(save_loc, 'wb'), -1)
 
-
-                # prev, prev2 = self.START
-                # context = self.START + [self._normalise(w[1]) for w in sentence] + self.END
-                # tags = [w[3] for w in sentence]
-                # for i, token in enumerate(sentence):
-                #     print("token ==========")
-                #     print(token)
-                #     if "." in token[0]:
-                #         continue
-
-                #     word = token[1]
-                #     dependentPOS = token[3]
-                #     print(token)
-                #     head = int(token[6])
-                #     # print("head ============")
-                #     # print(head)
-                #     # print(sentence[head-1])
-                #     headPOS = sentence[head-1][3]
-                #     headW = sentence[head-1][1]
-
-                #     feats = self._get_features(i, word, context, prev, prev2, headPOS, headW, dependentPOS)
-                #     # print("feats ===========")
-                #     # print(feats)
-                #     guess = self.model.predict(feats)
-                #     # print("guess ===========")
-                #     # print(guess)
-                #     # Need to modify update function
-                #     self.model.update(feats)
-                #     # print("\nweights ============")
-                #     # print(self.model.weights)
-
-                #     prev2 = prev
-                #     prev = dependentPOS
-                #     c += guess == tags[i]
-                #     n += 1
-                # break
-            # break
-        print("\nweights ============", file=sys.stderr)
-        print(self.model.weights, file=sys.stderr)
-        #         print('\r', end='', file=sys.stderr)
-        #     random.shuffle(sentences)
-        #     print()
-        #     print("Iter {0}: {1}/{2}={3}".format(iter_, c, n, _pc(c, n)), file=sys.stderr)
-        # self.model.average_weights()
-        # # Pickle as a binary file
-        # if save_loc is not None:
-        #     pickle.dump((self.model.weights, self.tagdict, self.classes),
-        #                  open(save_loc, 'wb'), -1)
+        # print("\nweights ============", file=sys.stderr)
+        # print(self.model.weights, file=sys.stderr)
         return None
 
     def load(self, loc):
