@@ -1,10 +1,5 @@
 # graph-parser
-graph-based parser
-
-To clone, run the following command in your terminal once you are in your target folder:
-git clone https://github.com/MrEvrgreen/graph-parser.git
-
-Will use conll format and output each word tagged with part of speech and the root in the correctly formatted columns.
+graph-based parser based on perceptron tagger
 
 ## Dependency
 1. https://github.com/ftyers/conllu-perceptron-tagger.git
@@ -12,6 +7,38 @@ Will use conll format and output each word tagged with part of speech and the ro
 ## Data (UD tree bank)
 1. ex. https://github.com/UniversalDependencies/UD_English-EWT.git
 
+# POS
+## train
+```
+Metrics    | Precision |    Recall |  F1 Score | AligndAcc
+-----------+-----------+-----------+-----------+-----------
+Tokens     |    100.00 |    100.00 |    100.00 |
+Sentences  |    100.00 |    100.00 |    100.00 |
+Words      |    100.00 |    100.00 |    100.00 |
+UPOS       |     98.42 |     98.42 |     98.42 |     98.42
+XPOS       |    100.00 |    100.00 |    100.00 |    100.00
+Feats      |    100.00 |    100.00 |    100.00 |    100.00
+AllTags    |     98.42 |     98.42 |     98.42 |     98.42
+Lemmas     |    100.00 |    100.00 |    100.00 |    100.00
+UAS        |    100.00 |    100.00 |    100.00 |    100.00
+LAS        |    100.00 |    100.00 |    100.00 |    100.00
+```
+```
+Metrics    | Precision |    Recall |  F1 Score | AligndAcc
+-----------+-----------+-----------+-----------+-----------
+Tokens     |    100.00 |    100.00 |    100.00 |
+Sentences  |    100.00 |    100.00 |    100.00 |
+Words      |    100.00 |    100.00 |    100.00 |
+UPOS       |     93.49 |     93.49 |     93.49 |     93.49
+XPOS       |    100.00 |    100.00 |    100.00 |    100.00
+Feats      |    100.00 |    100.00 |    100.00 |    100.00
+AllTags    |     93.49 |     93.49 |     93.49 |     93.49
+Lemmas     |    100.00 |    100.00 |    100.00 |    100.00
+UAS        |    100.00 |    100.00 |    100.00 |    100.00
+LAS        |    100.00 |    100.00 |    100.00 |    100.00
+```
+
+# Parser
 ## dev evaluation
 ### 10 iteration
 #### on dev.conllu
